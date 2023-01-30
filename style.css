@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #011627;
+}
+
+#heading {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+#heading h1 {
+  color: #E61554;
+  text-align: center;
+  font-weight: 100;
+  font-size: 128px;
+  font-family: 'Source Sans Pro', sans-serif;
+  margin: auto;
+}
+
+#moving_text {
+  position: absolute;
+  top: 0;
+  z-index: -1;
+
+  width: 100%;
+  height: 100%;
+  
+  overflow: hidden;
+}
+
+#moving_text canvas {
+  display: block;
+  transform-origin: top left;
+  transform: rotate(-33deg) translate(-50%);
+}
