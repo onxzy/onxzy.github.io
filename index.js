@@ -6,7 +6,7 @@ window.mobileAndTabletCheck = function() {
 
 drawMovingText("ONXZY");
 function drawMovingText(text) {
-  const textPadding = -5;
+  const textPadding = -10;
   const baseSpeed = 0.3;
   const fontSize = 110;
   const baseFontWidth = 0.5;

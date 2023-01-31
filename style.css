@@ -16,6 +16,7 @@ body {
 #heading h1 {
   display: inline;
   color: #E61554;
+  text-shadow: 0 0 10px #E61554, 0 0 20px #E61554, 0 0 100px #E61554;
   text-align: center;
   font-weight: 100;
   font-size: 128px;
