@@ -6,6 +6,7 @@ function drawMovingText(text) {
   const baseFontWidth = 0.5;
   const bgColor = '#011627';
   const txtColor = '#033863';
+  const angle = -Math.PI/5;
 
 
 
@@ -23,11 +24,16 @@ function drawMovingText(text) {
 
   const xOffsets = Array(lineNumber)
 
-  const mousePositon = [canvas.width/2, canvas.height/2];
+  const mousePosition = {x: canvas.width/2, y: canvas.height/2};
   document.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
-    mousePositon[0] = e.clientX - rect.left;
-    mousePositon[1] = e.clientY - rect.top;
+    scaleX = canvas.width / rect.width,
+    scaleY = canvas.height / rect.height;
+
+    mousePosition.x = (e.clientX - rect.left) * scaleX;
+    mousePosition.y = (e.clientY - rect.top) * scaleY;
+    // mousePosition[0] = e.clientX - rect.left;
+    // mousePosition[1] = e.clientY - rect.top;
   });
   
   context.fillStyle = bgColor;
@@ -42,13 +48,16 @@ function drawMovingText(text) {
     context.resetTransform();
     context.fillStyle = bgColor;
     context.fillRect(0, 0, canvas.width, canvas.height);  
-    
+   
     context.translate(canvas.width/2, canvas.height/2);
-    context.rotate(-Math.PI/5);
+    context.rotate(angle);
     context.translate(-canvas.width/2, -canvas.height/2); 
 
+    var imatrix = context.getTransform().invertSelf();  
+    const x_p = mousePosition.x * imatrix.a + mousePosition.y * imatrix.c + imatrix.e;
+    const y_p = mousePosition.x * imatrix.b + mousePosition.y * imatrix.d + imatrix.f;
 
-    const strokeGradient = context.createRadialGradient(mousePositon[0], mousePositon[1], 0, mousePositon[0], mousePositon[1], canvas.height/2);
+    const strokeGradient = context.createRadialGradient(x_p, y_p, 10, x_p, y_p, canvas.height/2);
     strokeGradient.addColorStop(0, txtColor);
     strokeGradient.addColorStop(1, bgColor);
     context.strokeStyle = strokeGradient;  
