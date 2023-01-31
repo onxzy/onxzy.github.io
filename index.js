@@ -1,7 +1,7 @@
 drawMovingText("ONXZY");
 function drawMovingText(text) {
   const textPadding = -5;
-  const baseSpeed = 0.5;
+  const baseSpeed = 0.1;
   const fontSize = 110;
   const baseFontWidth = 0.5;
   const bgColor = '#011627';
