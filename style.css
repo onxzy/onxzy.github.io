@@ -45,7 +45,7 @@ body {
   left: 0;
   right: 0;
 
-  animation: fadeInAnimation ease 3s;
+  animation: fadeInAnimation ease 5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
 }

@@ -7,15 +7,12 @@ window.mobileAndTabletCheck = function() {
 drawMovingText("ONXZY");
 function drawMovingText(text) {
   const textPadding = -5;
-  const baseSpeed = 0.1;
+  const baseSpeed = 0.3;
   const fontSize = 110;
   const baseFontWidth = 0.5;
   const bgColor = '#011627';
-  const txtColor = '#033863';
+  const txtColor = '#0670C6';
   const angle = -Math.PI/5;
-
-
-
 
   const canvas = document.getElementById("moving_text_cvs");
   const context = canvas.getContext("2d"); 
@@ -25,13 +22,15 @@ function drawMovingText(text) {
   const fontSizeMultiplier = [];
   for (let i = 0; i < lineNumber; i++) {
     speedMultiplier.push(0.5+Math.random())
-    fontSizeMultiplier.push(0.6+0.8*Math.random())
+    fontSizeMultiplier.push(0.25+1.5*Math.random())
   }
 
   const xOffsets = Array(lineNumber)
 
   const mousePosition = {x: canvas.width/2, y: canvas.height/2};
-  if (!window.mobileAndTabletCheck()) {
+
+  const isMobile = window.mobileAndTabletCheck();
+  if (!isMobile) {
     document.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
       scaleX = canvas.width / rect.width,
@@ -39,8 +38,6 @@ function drawMovingText(text) {
   
       mousePosition.x = (e.clientX - rect.left) * scaleX;
       mousePosition.y = (e.clientY - rect.top) * scaleY;
-      // mousePosition[0] = e.clientX - rect.left;
-      // mousePosition[1] = e.clientY - rect.top;
     });
   }
   
@@ -66,10 +63,15 @@ function drawMovingText(text) {
     const x_p = mousePosition.x * imatrix.a + mousePosition.y * imatrix.c + imatrix.e;
     const y_p = mousePosition.x * imatrix.b + mousePosition.y * imatrix.d + imatrix.f;
 
-    const strokeGradient = context.createRadialGradient(x_p, y_p, 10, x_p, y_p, canvas.height/2);
-    strokeGradient.addColorStop(0, txtColor);
-    strokeGradient.addColorStop(1, bgColor);
-    context.strokeStyle = strokeGradient;  
+    
+    if (isMobile) {
+      context.strokeStyle = txtColor;
+    } else {
+      const strokeGradient = context.createRadialGradient(x_p, y_p, 10, x_p, y_p, canvas.height/2);
+      strokeGradient.addColorStop(0, txtColor);
+      strokeGradient.addColorStop(1, bgColor);
+      context.strokeStyle = strokeGradient;  
+    }
 
     var yOffset = -canvas.height/2;
     for (let i = 0; i < lineNumber; i++) {
