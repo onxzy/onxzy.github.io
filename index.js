@@ -51,7 +51,7 @@ function drawMovingText(text) {
   
   setInterval(() => {
     animate()
-  }, 10);
+  }, 20);
 
   function animate() {
     context.resetTransform();
