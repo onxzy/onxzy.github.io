@@ -43,8 +43,8 @@ function drawMovingText(text) {
   const lines = [];
 
   const documentRoot = document.documentElement;
-  documentRoot.style.setProperty('--mouse-x', canvas.width/2);
-    documentRoot.style.setProperty('--mouse-y', canvas.height/2);
+  documentRoot.style.setProperty('--mouse-x', innerWidth/2);
+    documentRoot.style.setProperty('--mouse-y', innerHeight/2);
   if (!window.mobileAndTabletCheck()) {
     document.addEventListener('mousemove', evt => {
       let x = evt.clientX;
