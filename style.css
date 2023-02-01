@@ -49,6 +49,8 @@ body {
   animation: fadeInAnimation ease 5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
+
+  -webkit-mask-image: radial-gradient(circle at calc(var(--mouse-x, 0) * 1px) calc(var(--mouse-y, 0) * 1px), rgba(255,255,255,0.8) 10%, rgba(255,255,255,0) 50%);
 }
 
 @keyframes fadeInAnimation {

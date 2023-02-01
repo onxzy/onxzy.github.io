@@ -4,18 +4,32 @@ window.mobileAndTabletCheck = function() {
   return check;
 };
 
-drawMovingText("ONXZY");
+WebFont.load({
+  google: {
+    families: ['Inter:900']
+  },
+  active: () => {
+    drawMovingText("ONXZY")
+  }
+});
+
 function drawMovingText(text) {
-  const textPadding = -10;
-  const baseSpeed = 0.3;
+  // Options
+  const textPadding = 0;
+  const baseSpeed = 0.25;
   const fontSize = 110;
   const baseFontWidth = 0.5;
   const bgColor = '#011627';
   const txtColor = '#0670C6';
   const angle = -Math.PI/5;
 
+  // ---------------------------------
   const canvas = document.getElementById("moving_text_cvs");
   const context = canvas.getContext("2d"); 
+  context.fillStyle = bgColor;
+  context.textBaseline = 'top';
+  context.lineWidth = baseFontWidth;  
+
   const lineNumber = Math.ceil(canvas.height / fontSize)*2;
 
   const speedMultiplier = [];
@@ -25,87 +39,110 @@ function drawMovingText(text) {
     fontSizeMultiplier.push(0.25+1.5*Math.random())
   }
 
-  const xOffsets = Array(lineNumber)
+  const xOffsets = Array(lineNumber);
+  const lines = [];
 
-  const mousePosition = {x: canvas.width/2, y: canvas.height/2};
-
-  const isMobile = window.mobileAndTabletCheck();
-  if (!isMobile) {
-    document.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      scaleX = canvas.width / rect.width,
-      scaleY = canvas.height / rect.height;
-  
-      mousePosition.x = (e.clientX - rect.left) * scaleX;
-      mousePosition.y = (e.clientY - rect.top) * scaleY;
-    });
-  }
-  
-  
-  context.fillStyle = bgColor;
-  context.textBaseline = 'top';
-  context.lineWidth = baseFontWidth;  
-  
-  setInterval(() => {
-    animate()
-  }, 20);
-
-  function animate() {
-    context.resetTransform();
-    context.fillStyle = bgColor;
-    context.fillRect(0, 0, canvas.width, canvas.height);  
+  const documentRoot = document.documentElement;
+  documentRoot.style.setProperty('--mouse-x', canvas.width/2);
+    documentRoot.style.setProperty('--mouse-y', canvas.height/2);
+  if (!window.mobileAndTabletCheck()) {
+    document.addEventListener('mousemove', evt => {
+      let x = evt.clientX;
+      let y = evt.clientY;
    
-    context.translate(canvas.width/2, canvas.height/2);
-    context.rotate(angle);
-    context.translate(-canvas.width/2, -canvas.height/2); 
-
-    var imatrix = context.getTransform().invertSelf();  
-    const x_p = mousePosition.x * imatrix.a + mousePosition.y * imatrix.c + imatrix.e;
-    const y_p = mousePosition.x * imatrix.b + mousePosition.y * imatrix.d + imatrix.f;
-
-    
-    if (isMobile) {
-      context.strokeStyle = txtColor;
-    } else {
-      const strokeGradient = context.createRadialGradient(x_p, y_p, 10, x_p, y_p, canvas.height/2);
-      strokeGradient.addColorStop(0, txtColor);
-      strokeGradient.addColorStop(1, bgColor);
-      context.strokeStyle = strokeGradient;  
-    }
-
-    var yOffset = -canvas.height/2;
-    for (let i = 0; i < lineNumber; i++) {
-      const textHeight = fontSize*fontSizeMultiplier[i%fontSizeMultiplier.length];
-      context.font = `${textHeight}px Inter`;
-
-      drawLine(i, baseSpeed*speedMultiplier[i%speedMultiplier.length], yOffset)
-
-      yOffset += textPadding*fontSizeMultiplier[i%fontSizeMultiplier.length] + textHeight;
-    }   
+      documentRoot.style.setProperty('--mouse-x', x);
+      documentRoot.style.setProperty('--mouse-y', y);
+  });
   }
 
+  initDraw();
+  window.requestAnimationFrame(animate)
+    
+  // setInterval(() => {
+  //   animate()
+  // }, 10);
 
-  function drawLine(lineIndex, speed, y) {
-    const textWidth = context.measureText(text + ' ').width;
-    const blockSize = textWidth;
-    const blockNumber = Math.ceil(canvas.width / blockSize);
-
-    if (xOffsets[lineIndex] <= blockSize) {
-      xOffsets[lineIndex] += speed;
-    } else {
-      xOffsets[lineIndex] = 0
+  function initDraw() {
+    clearCanvas();
+    for (let i = 0; i < lineNumber; i++) {
+      initLine(i);
     }
+  }
+
+  function clearCanvas() {
+    // Clear Canvas
+    context.resetTransform();
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function initLine(lineIndex) {
+    const lineCanvas = document.createElement("canvas");
+    lineCanvas.width = canvas.width;
+    lineCanvas.height = canvas.height;
+
+    const lineContext = lineCanvas.getContext("2d"); 
+    lineContext.textBaseline = 'top';
+
+    const textHeight = Math.ceil(fontSize*fontSizeMultiplier[lineIndex]);
+    lineContext.font = `${textHeight}px Inter`;
+
+    const blockSize = lineContext.measureText(text + ' ').width;
+    const blockNumber = Math.ceil(canvas.width / blockSize);
 
     let printText = '';
     for (let i = 0; i < (blockNumber + 1); i++) {
       printText += text;
       printText += ' ';
     }
+    const textWidth = lineContext.measureText(printText).width;
 
-    const x = xOffsets[lineIndex] - blockSize;
-    context.strokeText(printText, x, y);
+    lineCanvas.width = textWidth;
+    lineCanvas.height = textHeight - 10*fontSizeMultiplier[lineIndex];
+    
+    lineContext.font = `${textHeight}px Inter`;
+    lineContext.strokeStyle = txtColor;
+    lineContext.lineWidth = baseFontWidth;  
+    lineContext.strokeText(printText, 0, textHeight - 20*fontSizeMultiplier[lineIndex]);
+
+    lines.push({
+      cvs: lineCanvas,
+      textHeight: textHeight,
+      canvasHeight: lineCanvas.height,
+      blockSize,
+    })
   }
 
+
+  function animate() {
+    clearCanvas();
+
+    // Rotate Context
+    context.translate(canvas.width/2, canvas.height/2);
+    context.rotate(angle);
+    context.translate(-canvas.width/2, -canvas.height/2);
+
+    var yOffset = -canvas.height/2;
+    for (let i = 0; i < lineNumber; i++) {
+      const line = lines[i];
+
+      animateLine(line, i, baseSpeed*speedMultiplier[i], yOffset)
+
+      yOffset += textPadding*fontSizeMultiplier[i] + line.canvasHeight;
+    }   
+
+    window.requestAnimationFrame(animate)
+  }
+
+  function animateLine(line, lineIndex, speed, y) {
+    if (xOffsets[lineIndex] <= line.blockSize) {
+      xOffsets[lineIndex] += speed;
+    } else {
+      xOffsets[lineIndex] = 0
+    }
+
+    const x = xOffsets[lineIndex] - line.blockSize;  
+    context.drawImage(line.cvs, x, y);
+  }
 }
 
 titleAnimation(1000);
