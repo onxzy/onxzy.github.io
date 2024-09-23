@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Source Sans 3'), url(/assets/fonts/SourceSans3-VariableFont_wght.ttf) format('truetype');
+  font-display: swap;
+}
+
 body {
   margin: 0;
   width: 100vw;
@@ -20,7 +28,7 @@ body {
   text-align: center;
   font-weight: 100;
   font-size: 128px;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   margin: auto;
 }
 
